@@ -48,7 +48,10 @@ namespace WorkStopwatch
             TimeSpan totalTime = new TimeSpan();
             foreach (var stopwatchService in _stopwatchServices)
             {
-                totalTime = totalTime.Add(stopwatchService.ElapsedTime);
+                if (!stopwatchService.OmitFromTotal)
+                {
+                    totalTime = totalTime.Add(stopwatchService.ElapsedTime);
+                }
             }
 
             int manualHours = 0;
@@ -198,14 +201,14 @@ namespace WorkStopwatch
 
         private void pauseBtn8_Click(object sender, EventArgs e)
         {
-            _stopwatchServices[7].StartStopwatch();
+            _stopwatchServices[7].PauseStopwatch();
             startBtn8.Enabled = true;
 
         }
 
         private void resetBtn8_Click(object sender, EventArgs e)
         {
-            _stopwatchServices[7].StartStopwatch();
+            _stopwatchServices[7].ResetStopwatch();
             startBtn8.Enabled = true;
 
         }
@@ -221,14 +224,6 @@ namespace WorkStopwatch
                 return;
             }
 
-            for (int i = 0; i < _projectCount; i++)
-            {
-                _stopwatchServices[i].SetStartTimeOffset(TimeSpan.Zero);
-                _stopwatchServices[i].ResetStopwatch();
-            }
-
-            manualHoursTxtBox.Text = string.Empty;
-            manualMinutesTxtbox.Text = string.Empty;
 
             // Reset Names
             projectNameTxtBox1.Text = string.Empty;
@@ -239,6 +234,31 @@ namespace WorkStopwatch
             projectNameTxtBox6.Text = string.Empty;
             projectNameTxtBox7.Text = string.Empty;
             projectNameTxtBox8.Text = string.Empty;
+
+
+            ClearAllButNames();
+        }
+
+        private void ClearAllButNames()
+        {
+            for (int i = 0; i < _projectCount; i++)
+            {
+                _stopwatchServices[i].SetStartTimeOffset(TimeSpan.Zero);
+                _stopwatchServices[i].ResetStopwatch();
+            }
+
+            // Reset Boosts
+            timerBoost1.Value = 0;
+            timerBoost2.Value = 0;
+            timerBoost3.Value = 0;
+            timerBoost4.Value = 0;
+            timerBoost5.Value = 0;
+            timerBoost6.Value = 0;
+            timerBoost7.Value = 0;
+            timerBoost8.Value = 0;
+
+            manualHoursTxtBox.Text = string.Empty;
+            manualMinutesTxtbox.Text = string.Empty;
 
             // Reset Descriptions
             description1.Text = string.Empty;
@@ -395,5 +415,103 @@ namespace WorkStopwatch
         {
 
         }
+
+        private void clearAllButProjNames_Click(object sender, EventArgs e)
+        {
+            var result = MessageBox.Show("Are you sure you want to clear all project timesheet data but the names?", "Confirm Clear",
+                MessageBoxButtons.OKCancel);
+            if (result == DialogResult.Cancel)
+            {
+                return;
+            }
+            ClearAllButNames();
+        }
+
+
+
+        #region Omit Methods
+        private void omitFromTotal_CheckedChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[0].OmitFromTotal = omitFromTotal1.Checked;
+        }
+
+        private void omitFromTotal2_CheckedChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[1].OmitFromTotal = omitFromTotal2.Checked;
+        }
+
+        private void omitFromTotal3_CheckedChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[2].OmitFromTotal = omitFromTotal3.Checked;
+        }
+
+        private void omitFromTotal4_CheckedChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[3].OmitFromTotal = omitFromTotal4.Checked;
+        }
+
+        private void omitFromTotal5_CheckedChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[4].OmitFromTotal = omitFromTotal5.Checked;
+        }
+
+        private void omitFromTotal6_CheckedChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[5].OmitFromTotal = omitFromTotal6.Checked;
+        }
+
+        private void omitFromTotal7_CheckedChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[6].OmitFromTotal = omitFromTotal7.Checked;
+        }
+
+        private void omitFromTotal8_CheckedChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[7].OmitFromTotal = omitFromTotal8.Checked;
+        }
+        #endregion
+
+
+        #region Timer Boost
+        private void timerBoost_ValueChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[0].BoostTimeSpan = new TimeSpan(0, (int)(timerBoost1.Value), 0);
+        }
+
+        private void timerBoost2_ValueChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[1].BoostTimeSpan = new TimeSpan(0, (int)(timerBoost2.Value), 0);
+        }
+
+        private void timerBoost3_ValueChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[2].BoostTimeSpan = new TimeSpan(0, (int)(timerBoost3.Value), 0);
+        }
+
+        private void timerBoost4_ValueChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[3].BoostTimeSpan = new TimeSpan(0, (int)(timerBoost4.Value), 0);
+        }
+
+        private void timerBoost5_ValueChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[4].BoostTimeSpan = new TimeSpan(0, (int)(timerBoost5.Value), 0);
+        }
+
+        private void timerBoost6_ValueChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[5].BoostTimeSpan = new TimeSpan(0, (int)(timerBoost6.Value), 0);
+        }
+
+        private void timerBoost7_ValueChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[6].BoostTimeSpan = new TimeSpan(0, (int)(timerBoost7.Value), 0);
+        }
+
+        private void timerBoost8_ValueChanged(object sender, EventArgs e)
+        {
+            _stopwatchServices[7].BoostTimeSpan = new TimeSpan(0, (int)(timerBoost8.Value), 0);
+        }
+        #endregion
     }
 }
