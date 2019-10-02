@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Newtonsoft.Json;
 using System.Configuration;
+using System.Xml;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace WorkStopwatch
 {
@@ -18,6 +20,7 @@ namespace WorkStopwatch
         private StopwatchService[] _stopwatchServices;
         private readonly int _projectCount = 10;
         private TimeSpan _lastSaved = TimeSpan.Zero;
+        private DateTime _dayStartTime;
 
         private string _timesheetFilename =
             ConfigurationManager.AppSettings["timesheetFilename"] ?? "work_timesheet.json";
@@ -75,8 +78,18 @@ namespace WorkStopwatch
 
         #region All The Stopwatch Control Buttons Clicks
 
+        private void SetStartTime()
+        {
+            if (!_stopwatchServices.Any(x => x.ElapsedTime > TimeSpan.Zero))
+            {
+                _dayStartTime = DateTime.Now;
+                dayStartLabel.Text = _dayStartTime.ToLongTimeString();
+            }
+        }
+
         private void startBtn1_Click(object sender, EventArgs e)
         {
+            SetStartTime();
             _stopwatchServices[0].StartStopwatch();
             startBtn1.Enabled = false;
         }
@@ -96,6 +109,7 @@ namespace WorkStopwatch
 
         private void startBtn2_Click(object sender, EventArgs e)
         {
+            SetStartTime();
             _stopwatchServices[1].StartStopwatch();
             startBtn2.Enabled = false;
         }
@@ -115,6 +129,7 @@ namespace WorkStopwatch
 
         private void startBtn3_Click(object sender, EventArgs e)
         {
+            SetStartTime();
             _stopwatchServices[2].StartStopwatch();
             startBtn3.Enabled = false;
         }
@@ -134,6 +149,7 @@ namespace WorkStopwatch
 
         private void startBtn4_Click(object sender, EventArgs e)
         {
+            SetStartTime();
             _stopwatchServices[3].StartStopwatch();
             startBtn4.Enabled = false;
         }
@@ -153,6 +169,7 @@ namespace WorkStopwatch
 
         private void startBtn5_Click(object sender, EventArgs e)
         {
+            SetStartTime();
             _stopwatchServices[4].StartStopwatch();
             startBtn5.Enabled = false;
         }
@@ -172,6 +189,7 @@ namespace WorkStopwatch
 
         private void startBtn6_Click(object sender, EventArgs e)
         {
+            SetStartTime();
             _stopwatchServices[5].StartStopwatch();
             startBtn6.Enabled = false;
         }
@@ -191,6 +209,7 @@ namespace WorkStopwatch
 
         private void startBtn7_Click(object sender, EventArgs e)
         {
+            SetStartTime();
             _stopwatchServices[6].StartStopwatch();
             startBtn7.Enabled = false;
         }
@@ -211,9 +230,9 @@ namespace WorkStopwatch
 
         private void startBtn8_Click(object sender, EventArgs e)
         {
+            SetStartTime();
             _stopwatchServices[7].StartStopwatch();
             startBtn8.Enabled = false;
-
         }
 
         private void pauseBtn8_Click(object sender, EventArgs e)
@@ -233,6 +252,7 @@ namespace WorkStopwatch
 
         private void startBtn9_Click(object sender, EventArgs e)
         {
+            SetStartTime();
             _stopwatchServices[8].StartStopwatch();
             startBtn9.Enabled = false;
         }
@@ -286,6 +306,8 @@ namespace WorkStopwatch
                 _stopwatchServices[i].SetStartTimeOffset(TimeSpan.Zero);
                 _stopwatchServices[i].ResetStopwatch();
             }
+            _dayStartTime = DateTime.MinValue;
+            dayStartLabel.Text = string.Empty;
 
             // Reset Boosts
             timerBoost1.Value = 0;
@@ -321,50 +343,71 @@ namespace WorkStopwatch
 
         private void SaveData(string fileSuffix = "")
         {
-            var projectData = new List<ProjectTimeDataModel>();
+            var dailyData = new DailyTimeDataModel()
+            {
+                StartTime = _dayStartTime,
+                SaveTime = DateTime.Now,
+                DailySummary = dailySummary.Text
+            };
             for (int i = 0; i < _projectCount-1; i++)
             {
-                projectData.Add(new ProjectTimeDataModel()
+                dailyData.ProjectTime.Add(new ProjectTimeDataModel()
                 {
                     ElapsedTime = _stopwatchServices[i].ElapsedTime,
                 });
+                dailyData.TotalTime += _stopwatchServices[i].ElapsedTime;
             }
             int manualHours = 0;
             int manualMinutes = 0;
             Int32.TryParse(manualHoursTxtBox.Text, out manualHours);
             Int32.TryParse(manualMinutesTxtbox.Text, out manualMinutes);
 
-            projectData.Add(new ProjectTimeDataModel()
+            dailyData.ProjectTime.Add(new ProjectTimeDataModel()
             {
                 ElapsedTime = new TimeSpan(manualHours, manualMinutes, 0)
             });
 
-            projectData[0].Name = projectNameTxtBox1.Text;
-            projectData[1].Name = projectNameTxtBox2.Text;
-            projectData[2].Name = projectNameTxtBox3.Text;
-            projectData[3].Name = projectNameTxtBox4.Text;
-            projectData[4].Name = projectNameTxtBox5.Text;
-            projectData[5].Name = projectNameTxtBox6.Text;
-            projectData[6].Name = projectNameTxtBox7.Text;
-            projectData[7].Name = projectNameTxtBox8.Text;
-            projectData[8].Name = projectNameTxtBox9.Text;
-            projectData[9].Name = "Manual Entry";
+            dailyData.ProjectTime[0].Name = projectNameTxtBox1.Text;
+            dailyData.ProjectTime[1].Name = projectNameTxtBox2.Text;
+            dailyData.ProjectTime[2].Name = projectNameTxtBox3.Text;
+            dailyData.ProjectTime[3].Name = projectNameTxtBox4.Text;
+            dailyData.ProjectTime[4].Name = projectNameTxtBox5.Text;
+            dailyData.ProjectTime[5].Name = projectNameTxtBox6.Text;
+            dailyData.ProjectTime[6].Name = projectNameTxtBox7.Text;
+            dailyData.ProjectTime[7].Name = projectNameTxtBox8.Text;
+            dailyData.ProjectTime[8].Name = projectNameTxtBox9.Text;
+            dailyData.ProjectTime[9].Name = "Manual Entry";
 
-            projectData[0].Description = description1.Text;
-            projectData[1].Description = description2.Text;
-            projectData[2].Description = description3.Text;
-            projectData[3].Description = description4.Text;
-            projectData[4].Description = description5.Text;
-            projectData[5].Description = description6.Text;
-            projectData[6].Description = description7.Text;
-            projectData[7].Description = description8.Text;
-            projectData[8].Description = description9.Text;
-            projectData[9].Description = description10.Text;
+            dailyData.ProjectTime[0].Description = description1.Text;
+            dailyData.ProjectTime[1].Description = description2.Text;
+            dailyData.ProjectTime[2].Description = description3.Text;
+            dailyData.ProjectTime[3].Description = description4.Text;
+            dailyData.ProjectTime[4].Description = description5.Text;
+            dailyData.ProjectTime[5].Description = description6.Text;
+            dailyData.ProjectTime[6].Description = description7.Text;
+            dailyData.ProjectTime[7].Description = description8.Text;
+            dailyData.ProjectTime[8].Description = description9.Text;
+            dailyData.ProjectTime[9].Description = description10.Text;
 
-            var serializedProjectData = JsonConvert.SerializeObject(projectData, Formatting.Indented);
+            var serializedProjectData = JsonConvert.SerializeObject(dailyData, Formatting.Indented);
             using (var streamWriter =
                 new StreamWriter($"{Path.GetFileNameWithoutExtension(_timesheetFilename)}.{fileSuffix}json"))
             {
+//                streamWriter.Write(JsonConvert.SerializeObject(dailyData, Formatting.Indented));
+                streamWriter.Write(serializedProjectData);
+            }
+
+            var dailyDirectory = $"{Directory.GetCurrentDirectory()}\\daily";
+            var dailySuffix = $"{_dayStartTime.Year}-{_dayStartTime.Month}-{_dayStartTime.Day}";
+
+            if (!Directory.Exists(dailyDirectory))
+            {
+                Directory.CreateDirectory(dailyDirectory);
+            }
+            using (var streamWriter =
+                new StreamWriter($"{dailyDirectory}\\{Path.GetFileNameWithoutExtension(_timesheetFilename)}.{dailySuffix}.json"))
+            {
+                //                streamWriter.Write(JsonConvert.SerializeObject(dailyData, Formatting.Indented));
                 streamWriter.Write(serializedProjectData);
             }
         }
@@ -575,6 +618,9 @@ namespace WorkStopwatch
 
         }
 
+        private void label1_Click(object sender, EventArgs e)
+        {
 
+        }
     }
 }

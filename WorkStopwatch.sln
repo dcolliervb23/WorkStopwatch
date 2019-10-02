@@ -5,6 +5,12 @@ VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkStopwatch", "WorkStopwatch\WorkStopwatch.csproj", "{AA20D454-8CDA-4097-A449-B4D2258B60DD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{A0174D52-4D89-4E31-90F7-AA92399674BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkStopwatch.UnitTests", "..\Tests\WorkStopwatch\WorkStopwatch.UnitTests\WorkStopwatch.UnitTests.csproj", "{7A457666-5C1E-48ED-B215-22B61B550AE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkStopwatch.IntegrationTests", "..\Tests\WorkStopwatch\WorkStopwatch.IntegrationTests\WorkStopwatch.IntegrationTests.csproj", "{3A19B5CD-E401-4DCD-A81D-418942995648}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +21,21 @@ Global
 		{AA20D454-8CDA-4097-A449-B4D2258B60DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AA20D454-8CDA-4097-A449-B4D2258B60DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AA20D454-8CDA-4097-A449-B4D2258B60DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A457666-5C1E-48ED-B215-22B61B550AE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A457666-5C1E-48ED-B215-22B61B550AE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A457666-5C1E-48ED-B215-22B61B550AE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A457666-5C1E-48ED-B215-22B61B550AE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A19B5CD-E401-4DCD-A81D-418942995648}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A19B5CD-E401-4DCD-A81D-418942995648}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A19B5CD-E401-4DCD-A81D-418942995648}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A19B5CD-E401-4DCD-A81D-418942995648}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7A457666-5C1E-48ED-B215-22B61B550AE4} = {A0174D52-4D89-4E31-90F7-AA92399674BF}
+		{3A19B5CD-E401-4DCD-A81D-418942995648} = {A0174D52-4D89-4E31-90F7-AA92399674BF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A64291B7-B493-4180-B80C-C4264B240EDA}
